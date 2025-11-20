@@ -4,9 +4,9 @@ import "./globals.css";
 import { FaInstagram, FaFacebook, FaWhatsapp } from "react-icons/fa";
 import { SiGmail } from "react-icons/si";
 import Image from "next/image";
-
 import Link from "next/link";
 import Header from "./components/Header";
+import CatalogDownload from "./components/CatalogDownload";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +46,7 @@ export default function RootLayout({
             <Link href="/curriculum" className="hover:[text-shadow:0_0_10px_#ffffff] transition-all duration-300 text-lg">
               Curriculum
             </Link>
+            <CatalogDownload />
             <span>
               &copy; {new Date().getFullYear()} David Abt
             </span>
