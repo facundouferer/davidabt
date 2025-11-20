@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Home() {
   const images = [
-    { src: "/images/img01.png", text: "Formas y Volumnes", href: "/formasyvolumenes" },
+    { src: "/images/img01.png", text: "Formas y Volumenes", href: "/formasyvolumenes" },
     { src: "/images/img02.png", text: "Cosmos", href: "/cosmos" },
     { src: "/images/img03.png", text: "Pinturas", href: "/pinturas" },
     { src: "/images/img04.png", text: "OnAgua", href: "/onagua" },

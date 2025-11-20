@@ -200,6 +200,24 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Quick Access Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Link
+            href="/admin/dashboard"
+            className="bg-foreground/5 border border-foreground/10 rounded-lg p-6 hover:bg-foreground/10 transition-colors"
+          >
+            <h3 className="text-xl font-bold mb-2">👥 Usuarios</h3>
+            <p className="text-sm opacity-70">Gestiona los usuarios del sistema</p>
+          </Link>
+          <Link
+            href="/admin/dashboard/obras"
+            className="bg-foreground/5 border border-foreground/10 rounded-lg p-6 hover:bg-foreground/10 transition-colors"
+          >
+            <h3 className="text-xl font-bold mb-2">🎨 Obras</h3>
+            <p className="text-sm opacity-70">Administra las obras del portafolio</p>
+          </Link>
+        </div>
+
         <div className="bg-foreground/5 border border-foreground/10 rounded-lg p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Gestión de Usuarios</h2>
@@ -251,8 +269,8 @@ export default function AdminDashboard() {
                     <td className="py-3 px-4">
                       <span
                         className={`px-2 py-1 rounded text-xs ${user.role === "admin"
-                            ? "bg-blue-500/20 text-blue-500"
-                            : "bg-gray-500/20 text-gray-500"
+                          ? "bg-blue-500/20 text-blue-500"
+                          : "bg-gray-500/20 text-gray-500"
                           }`}
                       >
                         {user.role}

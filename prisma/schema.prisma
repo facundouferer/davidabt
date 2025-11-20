@@ -17,3 +17,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Obra {
+  id        String   @id @default(cuid())
+  nombre    String
+  detalle   String   @db.Text
+  imagenes  String[] // Array of image URLs
+  seccion   String   // formas-volumenes, cosmos, pinturas, onagua, trabajos-especiales, procesos
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
