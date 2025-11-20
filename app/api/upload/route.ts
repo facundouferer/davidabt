@@ -3,6 +3,18 @@ import { put } from "@vercel/blob";
 
 export async function POST(request: Request) {
   try {
+    // Check if Blob token is configured
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error("BLOB_READ_WRITE_TOKEN is not configured");
+      return NextResponse.json(
+        {
+          message: "El almacenamiento de archivos no está configurado. Por favor, configura Vercel Blob Storage.",
+          error: "BLOB_READ_WRITE_TOKEN not found"
+        },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
@@ -38,7 +50,10 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error uploading file:", error);
     return NextResponse.json(
-      { message: "Error al subir el archivo" },
+      {
+        message: "Error al subir el archivo",
+        error: error instanceof Error ? error.message : "Unknown error"
+      },
       { status: 500 }
     );
   }
