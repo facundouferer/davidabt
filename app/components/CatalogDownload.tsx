@@ -59,46 +59,6 @@ export default function CatalogDownload({ className = "" }: CatalogDownloadProps
         return;
       }
 
-      // Crear contenido HTML para el PDF
-      const pdfContent = createPDFContent(catalogData);
-
-      // Crear elemento temporal para renderizar el contenido
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = pdfContent;
-      tempDiv.style.position = "absolute";
-      tempDiv.style.left = "-9999px";
-      tempDiv.style.width = "794px"; // A4 width in pixels
-      tempDiv.style.padding = "40px";
-      tempDiv.style.backgroundColor = "white";
-      tempDiv.style.color = "black";
-      tempDiv.style.fontFamily = "Arial, sans-serif";
-      tempDiv.style.fontSize = "14px";
-      tempDiv.style.lineHeight = "1.4";
-
-      document.body.appendChild(tempDiv);
-
-      // Esperar a que las imágenes se carguen
-      const images = tempDiv.querySelectorAll("img");
-      await Promise.all(Array.from(images).map(img => {
-        return new Promise((resolve) => {
-          if (img.complete) {
-            resolve(null);
-          } else {
-            img.onload = () => resolve(null);
-            img.onerror = () => resolve(null);
-          }
-        });
-      }));
-
-      // Generar canvas del contenido
-      const canvas = await html2canvas(tempDiv, {
-        backgroundColor: "#ffffff",
-        scale: 1.5,
-        useCORS: true,
-        allowTaint: false,
-        foreignObjectRendering: false
-      });
-
       // Crear PDF
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -106,42 +66,37 @@ export default function CatalogDownload({ className = "" }: CatalogDownloadProps
         format: "a4"
       });
 
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let position = 0;
+      let isFirstPage = true;
 
-      // Si el contenido es más alto que una página, dividirlo
-      const pageHeight = 297; // A4 height in mm
-      const marginTop = 10;
-      const usableHeight = pageHeight - marginTop * 2;
+      // Agregar portada
+      await addCoverPage(pdf, isFirstPage);
+      isFirstPage = false;
 
-      while (position < imgHeight) {
-        if (position > 0) {
-          pdf.addPage();
-        }
-
-        pdf.addImage(
-          canvas.toDataURL("image/png", 0.9),
-          "PNG",
-          0,
-          marginTop,
-          imgWidth,
-          imgHeight,
-          undefined,
-          "FAST"
-        );
-
-        position += usableHeight;
-
-        // Agregar máscara blanca para ocultar el contenido que no debe verse en esta página
-        if (position < imgHeight) {
-          pdf.setFillColor(255, 255, 255);
-          pdf.rect(0, marginTop + usableHeight, imgWidth, pageHeight - marginTop - usableHeight, 'F');
-        }
+      // Agregar currículum si existe
+      if (catalogData.curriculum) {
+        if (!isFirstPage) pdf.addPage();
+        await addCurriculumPage(pdf, catalogData.curriculum);
+        isFirstPage = false;
       }
 
-      // Remover elemento temporal
-      document.body.removeChild(tempDiv);
+      // Agregar obras por sección
+      const sections = [
+        { key: "formas-volumenes", title: "Formas y Volúmenes" },
+        { key: "cosmos", title: "Cosmos" },
+        { key: "pinturas", title: "Pinturas" },
+        { key: "onagua", title: "Onagua" },
+        { key: "trabajos-especiales", title: "Trabajos Especiales" },
+        { key: "procesos", title: "Procesos" }
+      ];
+
+      for (const section of sections) {
+        const obras = catalogData.obras[section.key] || [];
+        if (obras.length > 0) {
+          if (!isFirstPage) pdf.addPage();
+          await addSectionPage(pdf, section.title, obras);
+          isFirstPage = false;
+        }
+      }
 
       // Descargar PDF
       const fileName = `catalogo-david-abt-${new Date().getFullYear()}.pdf`;
@@ -157,139 +112,170 @@ export default function CatalogDownload({ className = "" }: CatalogDownloadProps
         button.disabled = false;
       }
     }
-  }; const createPDFContent = (data: CatalogData) => {
-    const sections = [
-      { key: "formas-volumenes", title: "Formas y Volúmenes" },
-      { key: "cosmos", title: "Cosmos" },
-      { key: "pinturas", title: "Pinturas" },
-      { key: "onagua", title: "Onagua" },
-      { key: "trabajos-especiales", title: "Trabajos Especiales" },
-      { key: "procesos", title: "Procesos" }
-    ];
-
-    const content = `
-      <div style="max-width: 100%; color: black; background: white; font-family: Arial, sans-serif;">
-        <!-- Portada -->
-        <div style="text-align: center; margin-bottom: 60px; padding: 40px 0;">
-          <h1 style="font-size: 36px; font-weight: bold; margin: 40px 0 20px 0; color: black; letter-spacing: 2px;">
-            CATÁLOGO DE OBRAS
-          </h1>
-          <h2 style="font-size: 28px; margin: 20px 0 40px 0; color: black; font-weight: normal;">
-            David Abt
-          </h2>
-          <div style="width: 100px; height: 2px; background: black; margin: 20px auto;"></div>
-          <p style="font-size: 16px; color: black; margin-top: 30px;">
-            ${new Date().getFullYear()}
-          </p>
-        </div>
-        
-        <!-- Currículum -->
-        ${data.curriculum ? `
-          <div style="margin-bottom: 60px; page-break-before: always; padding: 20px 0;">
-            <h2 style="font-size: 28px; font-weight: bold; margin: 0 0 30px 0; color: black; text-align: center; text-transform: uppercase; letter-spacing: 1px;">
-              Currículum
-            </h2>
-            <div style="width: 80px; height: 2px; background: black; margin: 0 auto 40px auto;"></div>
-            
-            ${data.curriculum.fotoArtista ? `
-              <div style="text-align: center; margin: 40px 0;">
-                <img src="${data.curriculum.fotoArtista}" 
-                     style="width: 250px; height: 250px; border-radius: 8px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" 
-                     alt="Foto del artista" />
-              </div>
-            ` : ""}
-            
-            <div style="margin: 30px 0; line-height: 1.8; font-size: 14px; text-align: justify;">
-              ${cleanHTMLForPDF(data.curriculum.contenido)}
-            </div>
-            
-            <div style="margin-top: 50px; padding: 25px; border: 2px solid black; background-color: #f8f8f8;">
-              <h3 style="font-size: 20px; margin: 0 0 20px 0; color: black; text-align: center; font-weight: bold;">
-                DATOS DE CONTACTO
-              </h3>
-              <div style="text-align: center; font-size: 16px; line-height: 1.6;">
-                <p style="margin: 8px 0; color: black;"><strong>WhatsApp:</strong> +54 9 362 456-7700</p>
-                <p style="margin: 8px 0; color: black;"><strong>Instagram:</strong> @david.abt1</p>
-              </div>
-            </div>
-          </div>
-        ` : ""}
-        
-        <!-- Obras por Sección -->
-        ${Object.keys(data.obras).some(key => data.obras[key].length > 0) ? `
-          <div style="page-break-before: always; padding: 20px 0;">
-            <h2 style="font-size: 32px; font-weight: bold; margin: 0 0 40px 0; color: black; text-align: center; text-transform: uppercase; letter-spacing: 2px;">
-              Obras
-            </h2>
-            <div style="width: 100px; height: 3px; background: black; margin: 0 auto 50px auto;"></div>
-            
-            ${sections.filter(section => data.obras[section.key] && data.obras[section.key].length > 0).map(section => {
-      const obras = data.obras[section.key];
-
-      return `
-                <div style="margin-bottom: 60px; page-break-before: always;">
-                  <h3 style="font-size: 24px; font-weight: bold; margin: 20px 0 30px 0; color: black; text-transform: uppercase; text-align: center; letter-spacing: 1px;">
-                    ${section.title}
-                  </h3>
-                  <div style="width: 60px; height: 2px; background: black; margin: 0 auto 40px auto;"></div>
-                  
-                  ${obras.map((obra, index) => `
-                    <div style="margin-bottom: 50px; padding-bottom: 30px; ${index < obras.length - 1 ? 'border-bottom: 1px solid #ccc;' : ''}">
-                      <h4 style="font-size: 20px; font-weight: bold; margin: 0 0 20px 0; color: black; text-align: center;">
-                        ${obra.nombre}
-                      </h4>
-                      
-                      ${obra.imagenes && obra.imagenes.length > 0 ? `
-                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin: 30px 0;">
-                          ${obra.imagenes.slice(0, 4).map(img => `
-                            <img src="${img}" 
-                                 style="width: 300px; height: 300px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" 
-                                 alt="${obra.nombre}" />
-                          `).join("")}
-                          ${obra.imagenes.length > 4 ? `
-                            <p style="font-size: 12px; color: #666; text-align: center; width: 100%; margin: 10px 0 0 0;">
-                              ... y ${obra.imagenes.length - 4} imagen${obra.imagenes.length - 4 > 1 ? 'es' : ''} más
-                            </p>
-                          ` : ""}
-                        </div>
-                      ` : ""}
-                      
-                      <div style="margin-top: 25px; line-height: 1.7; color: black; font-size: 14px; text-align: justify; max-width: 700px; margin-left: auto; margin-right: auto;">
-                        ${cleanHTMLForPDF(obra.detalle)}
-                      </div>
-                    </div>
-                  `).join("")}
-                </div>
-              `;
-    }).join("")}
-          </div>
-        ` : ""}
-      </div>
-    `; return content;
   };
 
-  const cleanHTMLForPDF = (html: string) => {
+  const addCoverPage = async (pdf: jsPDF, isFirstPage: boolean) => {
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    // Título principal
+    pdf.setFontSize(32);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("CATÁLOGO DE OBRAS", pageWidth / 2, 80, { align: "center" });
+
+    // Nombre del artista
+    pdf.setFontSize(24);
+    pdf.setFont("helvetica", "normal");
+    pdf.text("David Abt", pageWidth / 2, 120, { align: "center" });
+
+    // Línea decorativa
+    pdf.setLineWidth(2);
+    pdf.line(80, 140, 130, 140);
+
+    // Año
+    pdf.setFontSize(16);
+    pdf.text(new Date().getFullYear().toString(), pageWidth / 2, 180, { align: "center" });
+  };
+
+  const addCurriculumPage = async (pdf: jsPDF, curriculum: any) => {
+    const pageWidth = 210;
+    let yPosition = 30;
+
+    // Título
+    pdf.setFontSize(24);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("CURRÍCULUM", pageWidth / 2, yPosition, { align: "center" });
+
+    yPosition += 20;
+
+    // Línea decorativa
+    pdf.setLineWidth(1);
+    pdf.line(85, yPosition, 125, yPosition);
+
+    yPosition += 30;
+
+    // Foto del artista (si existe)
+    if (curriculum.fotoArtista) {
+      try {
+        // Crear imagen temporal para obtener dimensiones
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+
+        await new Promise((resolve, reject) => {
+          img.onload = () => {
+            try {
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+              canvas.width = 150;
+              canvas.height = 150;
+              ctx?.drawImage(img, 0, 0, 150, 150);
+
+              const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+              pdf.addImage(dataUrl, "JPEG", (pageWidth - 40) / 2, yPosition, 40, 40);
+              resolve(null);
+            } catch (error) {
+              resolve(null); // Continuar sin imagen en caso de error
+            }
+          };
+          img.onerror = () => resolve(null);
+          img.src = curriculum.fotoArtista;
+        });
+
+        yPosition += 50;
+      } catch (error) {
+        console.log("Error cargando foto del artista:", error);
+      }
+    }
+
+    // Contenido del currículum
+    const cleanContent = cleanHTMLForText(curriculum.contenido);
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "normal");
+
+    const lines = pdf.splitTextToSize(cleanContent, 170);
+    for (let i = 0; i < lines.length && yPosition < 250; i++) {
+      pdf.text(lines[i], 20, yPosition);
+      yPosition += 6;
+    }
+
+    // Datos de contacto
+    yPosition = Math.max(yPosition + 20, 220);
+
+    pdf.setFontSize(16);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("DATOS DE CONTACTO", pageWidth / 2, yPosition, { align: "center" });
+
+    yPosition += 15;
+
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "normal");
+    pdf.text("WhatsApp: +54 9 362 456-7700", pageWidth / 2, yPosition, { align: "center" });
+
+    yPosition += 8;
+    pdf.text("Instagram: @david.abt1", pageWidth / 2, yPosition, { align: "center" });
+  };
+
+  const addSectionPage = async (pdf: jsPDF, sectionTitle: string, obras: any[]) => {
+    const pageWidth = 210;
+    let yPosition = 30;
+
+    // Título de la sección
+    pdf.setFontSize(24);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(sectionTitle.toUpperCase(), pageWidth / 2, yPosition, { align: "center" });
+
+    yPosition += 20;
+
+    // Línea decorativa
+    pdf.setLineWidth(1);
+    pdf.line(70, yPosition, 140, yPosition);
+
+    yPosition += 25;
+
+    for (const obra of obras) {
+      if (yPosition > 250) {
+        pdf.addPage();
+        yPosition = 30;
+      }
+
+      // Nombre de la obra
+      pdf.setFontSize(16);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(obra.nombre, pageWidth / 2, yPosition, { align: "center" });
+      yPosition += 15;
+
+      // Descripción de la obra
+      const cleanDescription = cleanHTMLForText(obra.detalle);
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+
+      const lines = pdf.splitTextToSize(cleanDescription, 170);
+      const maxLines = Math.min(lines.length, 8); // Limitar líneas para que quepa
+
+      for (let i = 0; i < maxLines; i++) {
+        pdf.text(lines[i], 20, yPosition);
+        yPosition += 5;
+      }
+
+      yPosition += 15;
+    }
+  };
+
+  const cleanHTMLForText = (html: string) => {
     if (!html) return "";
 
-    // Remover estilos complejos y mantener estructura básica
+    // Remover todas las etiquetas HTML y mantener solo el texto
     return html
-      .replace(/<p[^>]*>/gi, "<p style='margin: 10px 0; color: black;'>")
-      .replace(/<h1[^>]*>/gi, "<h1 style='font-size: 20px; font-weight: bold; margin: 20px 0 10px 0; color: black;'>")
-      .replace(/<h2[^>]*>/gi, "<h2 style='font-size: 18px; font-weight: bold; margin: 18px 0 8px 0; color: black;'>")
-      .replace(/<h3[^>]*>/gi, "<h3 style='font-size: 16px; font-weight: bold; margin: 16px 0 6px 0; color: black;'>")
-      .replace(/<ul[^>]*>/gi, "<ul style='margin: 10px 0; padding-left: 20px; color: black;'>")
-      .replace(/<ol[^>]*>/gi, "<ol style='margin: 10px 0; padding-left: 20px; color: black;'>")
-      .replace(/<li[^>]*>/gi, "<li style='margin: 5px 0; color: black;'>")
-      .replace(/<blockquote[^>]*>/gi, "<blockquote style='border-left: 3px solid black; padding-left: 15px; margin: 15px 0; font-style: italic; color: black;'>")
-      .replace(/<strong[^>]*>/gi, "<strong style='font-weight: bold; color: black;'>")
-      .replace(/<em[^>]*>/gi, "<em style='font-style: italic; color: black;'>")
-      .replace(/<img[^>]*>/gi, (match) => {
-        const src = match.match(/src="([^"]*)"/) ? match.match(/src="([^"]*)"/)![1] : "";
-        return `<img src="${src}" style="max-width: 100%; height: auto; margin: 10px auto; display: block; border-radius: 4px;" />`;
-      });
-  };
-
-  return (
+      .replace(/<[^>]*>/g, " ") // Remover todas las etiquetas HTML
+      .replace(/&nbsp;/g, " ") // Reemplazar espacios no rompibles
+      .replace(/&amp;/g, "&") // Reemplazar entidades HTML
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s+/g, " ") // Reemplazar múltiples espacios por uno solo
+      .trim();
+  }; return (
     <button
       onClick={generatePDF}
       className={`hover:scale-110 transition-transform duration-200 text-lg hover:[text-shadow:0_0_10px_#ffffff] ${className}`}
