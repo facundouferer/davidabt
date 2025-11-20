@@ -11,6 +11,7 @@ export async function GET() {
         username: true,
         email: true,
         role: true,
+        avatarUrl: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -32,7 +33,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { username, email, password, role } = body;
+    const { username, email, password, role, avatarUrl } = body;
 
     // Validate required fields
     if (!username || !email || !password) {
@@ -76,12 +77,14 @@ export async function POST(request: Request) {
         email,
         password: hashedPassword,
         role: role || "user",
+        avatarUrl: avatarUrl || null,
       },
       select: {
         id: true,
         username: true,
         email: true,
         role: true,
+        avatarUrl: true,
         createdAt: true,
       },
     });

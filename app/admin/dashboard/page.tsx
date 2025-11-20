@@ -4,12 +4,14 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface User {
   id: string;
   username: string;
   email: string;
   role: string;
+  avatarUrl?: string | null;
   createdAt: string;
 }
 
@@ -21,11 +23,13 @@ export default function AdminDashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     role: "user",
+    avatarUrl: "" as string | null,
   });
 
   useEffect(() => {
@@ -48,6 +52,32 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAvatarUpload = async (file: File) => {
+    setUploadingAvatar(true);
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload,
+      });
+
+      if (res.ok) {
+        const { url } = await res.json();
+        setFormData({ ...formData, avatarUrl: url });
+      } else {
+        const error = await res.json();
+        alert(error.message || "Error al subir imagen");
+      }
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      alert("Error al subir imagen");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -59,7 +89,7 @@ export default function AdminDashboard() {
 
       if (res.ok) {
         setShowCreateModal(false);
-        setFormData({ username: "", email: "", password: "", role: "user" });
+        setFormData({ username: "", email: "", password: "", role: "user", avatarUrl: null });
         fetchUsers();
       } else {
         const error = await res.json();
@@ -85,7 +115,7 @@ export default function AdminDashboard() {
       if (res.ok) {
         setShowEditModal(false);
         setEditingUser(null);
-        setFormData({ username: "", email: "", password: "", role: "user" });
+        setFormData({ username: "", email: "", password: "", role: "user", avatarUrl: null });
         fetchUsers();
       } else {
         const error = await res.json();
@@ -131,6 +161,7 @@ export default function AdminDashboard() {
       email: user.email,
       password: "",
       role: user.role,
+      avatarUrl: user.avatarUrl || null,
     });
     setShowEditModal(true);
   };
@@ -184,6 +215,7 @@ export default function AdminDashboard() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-foreground/20">
+                  <th className="text-left py-3 px-4">Avatar</th>
                   <th className="text-left py-3 px-4">Usuario</th>
                   <th className="text-left py-3 px-4">Email</th>
                   <th className="text-left py-3 px-4">Rol</th>
@@ -197,6 +229,23 @@ export default function AdminDashboard() {
                     key={user.id}
                     className="border-b border-foreground/10 hover:bg-foreground/5"
                   >
+                    <td className="py-3 px-4">
+                      {user.avatarUrl ? (
+                        <Image
+                          src={user.avatarUrl}
+                          alt={user.username}
+                          width={40}
+                          height={40}
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-foreground/20 flex items-center justify-center">
+                          <span className="text-sm font-bold">
+                            {user.username[0].toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </td>
                     <td className="py-3 px-4">{user.username}</td>
                     <td className="py-3 px-4">{user.email}</td>
                     <td className="py-3 px-4">
@@ -238,10 +287,39 @@ export default function AdminDashboard() {
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-background border border-foreground/20 rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-background border border-foreground/20 rounded-lg p-6 w-full max-w-md my-8">
             <h2 className="text-2xl font-bold mb-4">Crear Nuevo Usuario</h2>
             <form onSubmit={handleCreateUser} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Avatar</label>
+                <div className="flex items-center gap-4">
+                  {formData.avatarUrl ? (
+                    <Image
+                      src={formData.avatarUrl}
+                      alt="Avatar"
+                      width={60}
+                      height={60}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-15 h-15 rounded-full bg-foreground/20 flex items-center justify-center">
+                      <span className="text-xl">👤</span>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleAvatarUpload(file);
+                    }}
+                    className="text-sm"
+                    disabled={uploadingAvatar}
+                  />
+                </div>
+                {uploadingAvatar && <p className="text-sm text-blue-500 mt-1">Subiendo...</p>}
+              </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Usuario</label>
                 <input
@@ -295,6 +373,7 @@ export default function AdminDashboard() {
                 <button
                   type="submit"
                   className="flex-1 py-2 bg-foreground text-background rounded hover:opacity-90"
+                  disabled={uploadingAvatar}
                 >
                   Crear
                 </button>
@@ -302,7 +381,7 @@ export default function AdminDashboard() {
                   type="button"
                   onClick={() => {
                     setShowCreateModal(false);
-                    setFormData({ username: "", email: "", password: "", role: "user" });
+                    setFormData({ username: "", email: "", password: "", role: "user", avatarUrl: null });
                   }}
                   className="flex-1 py-2 border border-foreground/20 rounded hover:bg-foreground/10"
                 >
@@ -316,10 +395,50 @@ export default function AdminDashboard() {
 
       {/* Edit User Modal */}
       {showEditModal && editingUser && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-background border border-foreground/20 rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-background border border-foreground/20 rounded-lg p-6 w-full max-w-md my-8">
             <h2 className="text-2xl font-bold mb-4">Editar Usuario</h2>
             <form onSubmit={handleUpdateUser} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Avatar</label>
+                <div className="flex items-center gap-4">
+                  {formData.avatarUrl ? (
+                    <Image
+                      src={formData.avatarUrl}
+                      alt="Avatar"
+                      width={60}
+                      height={60}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-15 h-15 rounded-full bg-foreground/20 flex items-center justify-center">
+                      <span className="text-xl">👤</span>
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleAvatarUpload(file);
+                      }}
+                      className="text-sm"
+                      disabled={uploadingAvatar}
+                    />
+                    {formData.avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, avatarUrl: null })}
+                        className="text-xs text-red-500 hover:underline"
+                      >
+                        Eliminar avatar
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {uploadingAvatar && <p className="text-sm text-blue-500 mt-1">Subiendo...</p>}
+              </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Usuario</label>
                 <input
@@ -377,6 +496,7 @@ export default function AdminDashboard() {
                 <button
                   type="submit"
                   className="flex-1 py-2 bg-foreground text-background rounded hover:opacity-90"
+                  disabled={uploadingAvatar}
                 >
                   Actualizar
                 </button>
@@ -385,7 +505,7 @@ export default function AdminDashboard() {
                   onClick={() => {
                     setShowEditModal(false);
                     setEditingUser(null);
-                    setFormData({ username: "", email: "", password: "", role: "user" });
+                    setFormData({ username: "", email: "", password: "", role: "user", avatarUrl: null });
                   }}
                   className="flex-1 py-2 border border-foreground/20 rounded hover:bg-foreground/10"
                 >

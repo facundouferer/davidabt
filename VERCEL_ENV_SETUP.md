@@ -19,16 +19,28 @@
    ```
    O usa: `supersecretkey_change_this_in_production_12345678`
 
+4. **BLOB_READ_WRITE_TOKEN**
+   ```
+   Se genera automáticamente al conectar Vercel Blob Storage
+   ```
+   - Ve a Storage → Connect Store → Blob
+   - Vercel creará automáticamente esta variable
+
 ## Cómo agregarlas en Vercel:
 
 1. Ve a tu proyecto en Vercel
 2. Settings → Environment Variables
 3. Agrega cada variable con su valor
-4. Aplica a: Production, Preview, Development
-5. Redeploy el proyecto
+4. Para Blob Storage:
+   - Ve a Storage tab
+   - Click "Create Database" → Blob
+   - Esto agregará automáticamente BLOB_READ_WRITE_TOKEN
+5. Aplica a: Production, Preview, Development
+6. Redeploy el proyecto
 
 ## Verificar que funcione:
 
 Después de agregar las variables y hacer redeploy, verifica:
 - `/admin` - Debería mostrar el login
 - Credenciales: admin / admin
+- Podrás subir avatares de usuario

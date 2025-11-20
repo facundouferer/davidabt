@@ -10,7 +10,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { username, email, password, role } = body;
+    const { username, email, password, role, avatarUrl } = body;
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -72,6 +72,11 @@ export async function PUT(
       updateData.password = await bcrypt.hash(password, 10);
     }
 
+    // Update avatarUrl if provided
+    if (avatarUrl !== undefined) {
+      updateData.avatarUrl = avatarUrl;
+    }
+
     // Update user
     const updatedUser = await prisma.user.update({
       where: { id },
@@ -81,6 +86,7 @@ export async function PUT(
         username: true,
         email: true,
         role: true,
+        avatarUrl: true,
         createdAt: true,
         updatedAt: true,
       },
