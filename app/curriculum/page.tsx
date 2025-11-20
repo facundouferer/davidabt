@@ -70,11 +70,96 @@ export default function Curriculum() {
           )}
 
           <div
-            className="prose prose-invert prose-lg max-w-none"
+            className="prose prose-invert prose-lg max-w-none curriculum-content"
             dangerouslySetInnerHTML={{ __html: curriculum.contenido }}
           />
         </div>
       </div>
+
+      <style jsx global>{`
+        .curriculum-content h1 {
+          font-size: 2.5rem;
+          font-weight: bold;
+          margin: 2rem 0 1rem 0;
+          line-height: 1.2;
+        }
+        
+        .curriculum-content h2 {
+          font-size: 2rem;
+          font-weight: bold;
+          margin: 1.75rem 0 0.75rem 0;
+          line-height: 1.3;
+        }
+        
+        .curriculum-content h3 {
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin: 1.5rem 0 0.5rem 0;
+          line-height: 1.4;
+        }
+        
+        .curriculum-content p {
+          margin: 1rem 0;
+          line-height: 1.7;
+        }
+        
+        .curriculum-content strong {
+          font-weight: bold;
+        }
+        
+        .curriculum-content em {
+          font-style: italic;
+        }
+        
+        .curriculum-content u {
+          text-decoration: underline;
+        }
+        
+        .curriculum-content ul, .curriculum-content ol {
+          margin: 1rem 0;
+          padding-left: 2rem;
+        }
+        
+        .curriculum-content li {
+          margin: 0.5rem 0;
+          line-height: 1.6;
+        }
+        
+        .curriculum-content blockquote {
+          border-left: 4px solid #666;
+          padding-left: 1.5rem;
+          margin: 1.5rem 0;
+          font-style: italic;
+          color: #ccc;
+        }
+        
+        .curriculum-content hr {
+          border: none;
+          border-top: 2px solid #444;
+          margin: 2rem 0;
+        }
+        
+        .curriculum-content img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 8px;
+          margin: 1.5rem auto;
+          display: block;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .curriculum-content [style*="text-align: center"] {
+          text-align: center;
+        }
+        
+        .curriculum-content [style*="text-align: right"] {
+          text-align: right;
+        }
+        
+        .curriculum-content [style*="text-align: left"] {
+          text-align: left;
+        }
+      `}</style>
     </div>
   );
 }
