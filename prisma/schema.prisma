@@ -39,3 +39,11 @@ model Evento {
   updatedAt   DateTime @updatedAt
 }
 
+model Curriculum {
+  id              String   @id @default(cuid())
+  contenido       String   @db.Text // Rich text HTML content
+  fotoArtista     String?  // Artist photo URL
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
