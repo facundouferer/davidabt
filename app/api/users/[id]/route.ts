@@ -7,12 +7,12 @@ const prisma = new PrismaClient();
 // PUT update user
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { username, email, password, role } = body;
-    const { id } = params;
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -101,10 +101,10 @@ export async function PUT(
 // DELETE user
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
