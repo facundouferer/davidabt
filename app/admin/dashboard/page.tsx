@@ -201,7 +201,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Access Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Link
             href="/admin/dashboard"
             className="bg-foreground/5 border border-foreground/10 rounded-lg p-6 hover:bg-foreground/10 transition-colors"
@@ -215,6 +215,13 @@ export default function AdminDashboard() {
           >
             <h3 className="text-xl font-bold mb-2">🎨 Obras</h3>
             <p className="text-sm opacity-70">Administra las obras del portafolio</p>
+          </Link>
+          <Link
+            href="/admin/dashboard/eventos"
+            className="bg-foreground/5 border border-foreground/10 rounded-lg p-6 hover:bg-foreground/10 transition-colors"
+          >
+            <h3 className="text-xl font-bold mb-2">📅 Eventos</h3>
+            <p className="text-sm opacity-70">Gestiona eventos y exposiciones</p>
           </Link>
         </div>
 

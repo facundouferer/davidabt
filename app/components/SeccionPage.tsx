@@ -23,7 +23,6 @@ interface SeccionPageProps {
 export default function SeccionPage({ seccion, titulo, descripcion, emoji = "🎨" }: SeccionPageProps) {
   const [obras, setObras] = useState<Obra[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedObra, setSelectedObra] = useState<Obra | null>(null);
 
   useEffect(() => {
     fetchObras();
@@ -67,10 +66,10 @@ export default function SeccionPage({ seccion, titulo, descripcion, emoji = "�
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {obras.map((obra) => (
-              <div
+              <Link
                 key={obra.id}
-                onClick={() => setSelectedObra(obra)}
-                className="cursor-pointer group"
+                href={`/obra/${obra.id}`}
+                className="group"
               >
                 <div className="relative h-80 bg-foreground/10 rounded-lg overflow-hidden mb-4">
                   {obra.imagenes.length > 0 ? (
@@ -89,58 +88,11 @@ export default function SeccionPage({ seccion, titulo, descripcion, emoji = "�
                 <h3 className="text-xl font-bold group-hover:opacity-70 transition-opacity">
                   {obra.nombre}
                 </h3>
-              </div>
+              </Link>
             ))}
           </div>
         )}
       </div>
-
-      {/* Modal de detalle */}
-      {selectedObra && (
-        <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 overflow-y-auto"
-          onClick={() => setSelectedObra(null)}
-        >
-          <div
-            className="bg-background border border-foreground/20 rounded-lg max-w-4xl w-full my-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-3xl font-bold">{selectedObra.nombre}</h2>
-                <button
-                  onClick={() => setSelectedObra(null)}
-                  className="text-2xl hover:opacity-70 transition-opacity"
-                >
-                  ×
-                </button>
-              </div>
-
-              {/* Galería de imágenes */}
-              {selectedObra.imagenes.length > 0 && (
-                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {selectedObra.imagenes.map((imagen, index) => (
-                    <div key={index} className="relative h-96">
-                      <Image
-                        src={imagen}
-                        alt={`${selectedObra.nombre} - ${index + 1}`}
-                        fill
-                        className="object-cover rounded-lg"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Detalle */}
-              <div
-                className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: selectedObra.detalle }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

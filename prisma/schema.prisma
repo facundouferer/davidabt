@@ -28,3 +28,14 @@ model Obra {
   updatedAt DateTime @updatedAt
 }
 
+model Evento {
+  id          String   @id @default(cuid())
+  fecha       DateTime
+  titulo      String
+  lugar       String
+  descripcion String   @db.Text
+  imagenes    String[] // Array of image URLs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
