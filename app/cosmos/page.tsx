@@ -1,7 +1,12 @@
+import SeccionPage from "../components/SeccionPage";
+
 export default function Cosmos() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold">Cosmos</h1>
-    </div>
+    <SeccionPage
+      seccion="cosmos"
+      titulo="Cosmos"
+      descripcion="Exploraciones del universo y lo celestial"
+      emoji="🌌"
+    />
   );
 }
