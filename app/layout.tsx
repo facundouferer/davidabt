@@ -39,6 +39,9 @@ export default function RootLayout({
           {children}
         </div>
         <footer className="w-full py-8 flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 bg-background text-foreground mt-auto">
+          <span>
+            &copy; {new Date().getFullYear()} David Abt
+          </span>
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
             <Link href="/eventos" className="hover:[text-shadow:0_0_10px_#ffffff] transition-all duration-300 text-lg">
               Eventos
@@ -47,9 +50,6 @@ export default function RootLayout({
               Curriculum
             </Link>
             <CatalogDownload />
-            <span>
-              &copy; {new Date().getFullYear()} David Abt
-            </span>
           </div>
 
           <div className="flex items-center gap-8 mt-4 md:mt-0">
