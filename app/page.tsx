@@ -3,12 +3,12 @@ import Link from "next/link";
 
 export default function Home() {
   const images = [
-    { src: "/images/img01.png", text: "Formas y Volumenes", href: "/formasyvolumenes" },
-    { src: "/images/img02.png", text: "Cosmos", href: "/cosmos" },
-    { src: "/images/img03.png", text: "Pinturas", href: "/pinturas" },
-    { src: "/images/img04.png", text: "OnAgua", href: "/onagua" },
-    { src: "/images/img05.png", text: "Trabajos Especiales", href: "/trabajosespeciales" },
-    { src: "/images/img06.png", text: "Procesos", href: "/procesos" },
+    { src: "/images/formas_y_volumenes.jpeg", text: "Formas y Volumenes", href: "/formasyvolumenes" },
+    { src: "/images/cosmos.jpeg", text: "Cosmos", href: "/cosmos" },
+    { src: "/images/pinturas.jpeg", text: "Pinturas", href: "/pinturas" },
+    { src: "/images/on_agua.jpeg", text: "OnAgua", href: "/onagua" },
+    { src: "/images/trabajos_especiales.jpeg", text: "Trabajos Especiales", href: "/trabajosespeciales" },
+    { src: "/images/procesos.jpeg", text: "Procesos", href: "/procesos" },
   ];
 
   return (
@@ -20,14 +20,14 @@ export default function Home() {
             <Link
               key={index}
               href={item.href}
-              className="relative w-full h-[400px] md:h-[350px] group overflow-hidden border-2 border-transparent hover:border-foreground transition-all duration-300 block"
+              className="relative w-full h-[400px] md:h-[350px] group overflow-hidden border-2 border-transparent  transition-all duration-300 block"
               aria-label={`View ${item.text}`}
             >
               <Image
                 src={item.src}
                 alt={item.text}
                 fill
-                className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                className="object-cover hover:blur-xl transition-all duration-500"
               />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <span className="text-white text-3xl font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] shadow-black uppercase tracking-wider text-center px-4">

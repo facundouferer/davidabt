@@ -15,7 +15,7 @@ export default function Header() {
       {/* Logo */}
       <Link href="/" className="relative w-64 h-24 block z-50">
         <Image
-          src="/images/firma.png"
+          src="/images/logo.svg"
           alt="David Abt Signature"
           fill
           className="object-contain"
