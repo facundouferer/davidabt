@@ -39,7 +39,7 @@ export default function Home() {
                 src={item.src}
                 alt={item.text}
                 fill
-                className="object-cover hover:blur-xl transition-all duration-500"
+                className="object-cover hover:contrast-200 transition-all duration-500"
               />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <span className="text-white text-3xl font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] shadow-black uppercase tracking-wider text-center px-4">
