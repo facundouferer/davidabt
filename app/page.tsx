@@ -1,5 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Inicio",
+  description: "Explora el portfolio de David Abt, escultor y artista plástico chaqueño. Descubre sus obras en formas y volúmenes, cosmos, pinturas, OnAgua, trabajos especiales y procesos creativos.",
+  openGraph: {
+    title: "David Abt - Escultor y Artista Plástico Chaqueño",
+    description: "David Abt es un escultor y artista plástico chaqueño cuya obra se caracteriza por una exploración profunda del volumen, la fantasía y lo simbólico, con un fuerte anclaje en el territorio del Gran Chaco.",
+    images: ['/images/fotodavidabt.png'],
+  },
+};
+
 
 export default function Home() {
   const images = [
