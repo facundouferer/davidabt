@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import Spinner from "../../components/Spinner";
 
 interface Obra {
   id: string;
@@ -59,11 +60,7 @@ export default function ObraDetail({ params }: { params: Promise<{ id: string }>
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Cargando...</p>
-      </div>
-    );
+    return <Spinner className="min-h-screen flex items-center justify-center" />;
   }
 
   if (!obra) {

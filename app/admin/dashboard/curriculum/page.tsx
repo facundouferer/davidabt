@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import RichTextEditorWithImages from "@/app/components/RichTextEditorWithImages";
 import Image from "next/image";
+import Spinner from "../../../components/Spinner";
 
 interface Curriculum {
   id: string;
@@ -108,11 +109,7 @@ export default function AdminCurriculum() {
   };
 
   if (status === "loading" || loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-lg">Cargando...</div>
-      </div>
-    );
+    return <Spinner className="min-h-screen flex items-center justify-center" />;
   }
 
   if (!session) {

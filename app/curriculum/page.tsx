@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Spinner from "../components/Spinner";
 
 interface Curriculum {
   id: string;
@@ -34,11 +35,7 @@ export default function Curriculum() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <div className="text-lg">Cargando...</div>
-      </div>
-    );
+    return <Spinner className="min-h-screen flex items-center justify-center" />;
   }
 
   if (!curriculum) {

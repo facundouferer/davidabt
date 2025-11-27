@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Spinner from "../components/Spinner";
 
 interface Evento {
   id: string;
@@ -44,11 +45,7 @@ export default function EventosPublic() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Cargando...</p>
-      </div>
-    );
+    return <Spinner className="min-h-screen flex items-center justify-center" />;
   }
 
   return (

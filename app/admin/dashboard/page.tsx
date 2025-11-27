@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Spinner from "../../components/Spinner";
 
 interface User {
   id: string;
@@ -167,11 +168,7 @@ export default function AdminDashboard() {
   };
 
   if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Cargando...</p>
-      </div>
-    );
+    return <Spinner className="min-h-screen flex items-center justify-center" />;
   }
 
   return (

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Spinner from "./Spinner";
 
 interface Obra {
   id: string;
@@ -41,11 +42,7 @@ export default function SeccionPage({ seccion, titulo, descripcion, emoji = "ðŸŽ
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Cargando...</p>
-      </div>
-    );
+    return <Spinner className="min-h-screen flex items-center justify-center" />;
   }
 
   return (
