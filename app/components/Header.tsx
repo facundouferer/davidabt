@@ -13,12 +13,12 @@ export default function Header() {
   return (
     <header className="w-full relative flex justify-center items-center py-3 z-50">
       {/* Logo */}
-      <Link href="/" className="relative w-64 h-24 block z-50">
+      <Link href="/" className="logo-draw-frame relative w-64 h-24 block z-50">
         <Image
           src="/images/logo.svg"
           alt="David Abt Signature"
           fill
-          className="object-contain"
+          className="logo-draw object-contain"
           priority
         />
       </Link>

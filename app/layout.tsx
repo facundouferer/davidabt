@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { FaInstagram, FaFacebook, FaWhatsapp } from "react-icons/fa";
-import { SiGmail } from "react-icons/si";
-import Image from "next/image";
+import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import Header from "./components/Header";
 import CatalogDownload from "./components/CatalogDownload";
 import ClientLoader from "./components/ClientLoader";
+import MouseLight from "./components/MouseLight";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -108,6 +107,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ClientLoader>
+          <MouseLight />
           {/* Header with Signature */}
           <Header />
           <div className="flex flex-col bg-background text-foreground">
@@ -148,9 +148,18 @@ export default function RootLayout({
               </a>
             </div>
           </footer>
+          <div className="w-full pb-4 flex justify-center bg-background text-foreground">
+            <a
+              href="https://facundouferer.ar/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs opacity-50 hover:opacity-100 transition-opacity"
+            >
+              Desarrollado por Facundo Uferer
+            </a>
+          </div>
         </ClientLoader>
       </body>
     </html>
   );
 }
-

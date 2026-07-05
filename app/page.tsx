@@ -32,7 +32,7 @@ export default function Home() {
             <Link
               key={index}
               href={item.href}
-              className="relative w-full h-[400px] md:h-[350px] group overflow-hidden border-2 border-transparent  transition-all duration-300 block"
+              className="relative w-full h-[400px] md:h-[350px] group overflow-hidden border-2 border-transparent rounded-2xl transition-all duration-300 block"
               aria-label={`View ${item.text}`}
             >
               <Image

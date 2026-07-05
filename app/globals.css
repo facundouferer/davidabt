@@ -17,3 +17,131 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.logo-draw {
+  animation: logo-draw 2.8s cubic-bezier(0.65, 0, 0.35, 1) both;
+  clip-path: inset(0 100% 0 0);
+  filter: drop-shadow(0 0 0 rgb(255 255 255 / 0));
+}
+
+.logo-draw-frame::after {
+  position: absolute;
+  top: 12%;
+  bottom: 12%;
+  left: 0;
+  width: 42px;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.42),
+    transparent
+  );
+  filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-52px);
+  animation: logo-draw-light 2.8s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.logo-draw::selection {
+  background: transparent;
+}
+
+@keyframes logo-draw {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    filter: drop-shadow(0 0 0 rgb(255 255 255 / 0));
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  72% {
+    clip-path: inset(0 0 0 0);
+    filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.75));
+  }
+
+  100% {
+    clip-path: inset(0 0 0 0);
+    filter: drop-shadow(0 0 0 rgb(255 255 255 / 0));
+    opacity: 1;
+  }
+}
+
+@keyframes logo-draw-light {
+  0% {
+    opacity: 0;
+    transform: translateX(-52px);
+  }
+
+  12% {
+    opacity: 0.9;
+  }
+
+  72% {
+    opacity: 0.9;
+    transform: translateX(248px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(248px);
+  }
+}
+
+.mouse-light {
+  --mouse-x: 50vw;
+  --mouse-y: 50vh;
+
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle 340px at var(--mouse-x) var(--mouse-y),
+      rgb(255 255 255 / 0.18),
+      rgb(255 255 255 / 0.08) 34%,
+      rgb(255 255 255 / 0.02) 58%,
+      transparent 76%
+    );
+  mix-blend-mode: screen;
+}
+
+@media (pointer: coarse) {
+  .mouse-light {
+    background:
+      radial-gradient(
+        circle 300px at 50% 28%,
+        rgb(255 255 255 / 0.14),
+        rgb(255 255 255 / 0.05) 42%,
+        transparent 78%
+      );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-draw {
+    animation: none;
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+
+  .logo-draw-frame::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  .mouse-light {
+    background:
+      radial-gradient(
+        circle 320px at 50% 35%,
+        rgb(255 255 255 / 0.12),
+        rgb(255 255 255 / 0.04) 44%,
+        transparent 78%
+      );
+  }
+}

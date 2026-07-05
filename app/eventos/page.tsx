@@ -27,7 +27,7 @@ export default function EventosPublic() {
     try {
       const res = await fetch("/api/eventos");
       const data = await res.json();
-      setEventos(data);
+      setEventos(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching eventos:", error);
     } finally {
